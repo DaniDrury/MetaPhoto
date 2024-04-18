@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
 
       // remove albumId key from photo object
       const { albumId, ...photo } = photoData[i];
-      
+
       photoDataEnriched.push(photo);
     }
 
@@ -42,20 +42,6 @@ router.get('/', async (req, res) => {
     console.error(err);
     res.status(500).json("Internal Server Error");
   }
-
-  // try {
-  //   fetch(`${photosApi}?_start=${offset}&_limit=${limit}`).then((response) => {
-  //     return response.json();
-  //   })
-  //   .then((data) => {
-  //     console.log(data);
-  //     res.json(data);
-  //     // console.log(data[0].address.geo);
-  //   })
-  // } catch (err) {
-  //   console.error(err);
-  //   res.status(500).json({ msg: "Internal Server Error" });
-  // }
 });
 
 module.exports = router;
