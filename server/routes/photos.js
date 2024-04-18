@@ -1,10 +1,11 @@
 const router = require('express').Router();
+const axios = require('axios');
 
 const userApi = "https://jsonplaceholder.typicode.com/users";
 const albumsApi = "https://jsonplaceholder.typicode.com/albums";
 const photosApi = "https://jsonplaceholder.typicode.com/photos";
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const query = req.query;
   console.log(query);
 
@@ -12,18 +13,49 @@ router.get('/', (req, res) => {
   const offset = query.offset || 0;
 
   try {
-    fetch(`${photosApi}?_start=${offset}&_limit=${limit}`).then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-      res.json(data);
-      // console.log(data[0].address.geo);
-    })
+    const photoResponse = await axios.get(`${photosApi}?_start=${offset}&_limit=${limit}`);
+    const photoData = photoResponse.data;
+
+    const photoDataEnriched = [];
+
+    for (let i = 0; i < photoData.length; i++) {
+      const albumResponse = await axios.get(`${albumsApi}/${photoData[i].albumId}`);
+      const albumData = albumResponse.data;
+  
+      const userResponse = await axios.get(`${userApi}/${albumData.userId}`);
+      const userData = userResponse.data;
+
+      // removed userId key from albumData
+      const { userId, ...album } = albumData
+      // save album and userData values within photo object
+      photoData[i].album = album;
+      photoData[i].album.user = userData;
+
+      // remove albumId key from photo object
+      const { albumId, ...photo } = photoData[i];
+      
+      photoDataEnriched.push(photo);
+    }
+
+    res.json(photoDataEnriched);
   } catch (err) {
     console.error(err);
-    res.json("No Photo data found.");
+    res.status(500).json("Internal Server Error");
   }
+
+  // try {
+  //   fetch(`${photosApi}?_start=${offset}&_limit=${limit}`).then((response) => {
+  //     return response.json();
+  //   })
+  //   .then((data) => {
+  //     console.log(data);
+  //     res.json(data);
+  //     // console.log(data[0].address.geo);
+  //   })
+  // } catch (err) {
+  //   console.error(err);
+  //   res.status(500).json({ msg: "Internal Server Error" });
+  // }
 });
 
 module.exports = router;
