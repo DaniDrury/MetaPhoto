@@ -7,7 +7,6 @@ const photosApi = "https://jsonplaceholder.typicode.com/photos";
 
 router.get('/', async (req, res) => {
   const query = req.query;
-  console.log(query);
 
   const limit = query.limit || 25;
   const offset = query.offset || 0;
@@ -38,6 +37,35 @@ router.get('/', async (req, res) => {
     }
 
     res.json(photoDataEnriched);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json("Internal Server Error");
+  }
+});
+
+router.get('/:ID', async (req, res) => {
+  const id = req.params.ID;
+
+  try {
+    const photoResponse = await axios.get(`${photosApi}/${id}`);
+    const photoData = photoResponse.data;
+
+    const albumResponse = await axios.get(`${albumsApi}/${photoData.albumId}`);
+    const albumData = albumResponse.data;
+  
+    const userResponse = await axios.get(`${userApi}/${albumData.userId}`);
+    const userData = userResponse.data;
+
+      // removed userId key from albumData
+    const { userId, ...album } = albumData
+      // save album and userData values within photo object
+    photoData.album = album;
+    photoData.album.user = userData;
+
+      // remove albumId key from photo object
+    const { albumId, ...photo } = photoData;
+
+    res.json(photo);
   } catch (err) {
     console.error(err);
     res.status(500).json("Internal Server Error");
