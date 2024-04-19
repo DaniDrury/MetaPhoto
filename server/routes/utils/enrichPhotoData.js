@@ -14,7 +14,7 @@ async function enrichPhotoData(photos) {
     const userResponse = await axios.get(`${userApi}/${albumData.userId}`);
     const userData = userResponse.data;
 
-    // removed userId key from albumData
+    // remove userId key from albumData
     const { userId, ...album } = albumData
 
     // save album and userData values within photo object
