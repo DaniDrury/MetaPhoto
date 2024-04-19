@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const axios = require('axios');
+const { enrichPhotoData } = require('../utils/enrichPhotoData');
 
 const userApi = "https://jsonplaceholder.typicode.com/users";
 const albumsApi = "https://jsonplaceholder.typicode.com/albums";
@@ -17,58 +18,44 @@ router.get('/', async (req, res) => {
   // console.log("Title is " + title);
 
   try {
-    // get all photos
+    // due to inability to send api query specifying a "contains" filter, 
+    // instead get all data from internal API and filter responses here
     const allPhotosResponse = await axios.get(`${photosApi}`);
     const allPhotos = allPhotosResponse.data;
 
-    let photoData = [];
+    const photoData = [];
 
+    // begin checking filtering conditions
     if (title) {
-      // separate out only those with title containing query title
+      // separate out only those photos with title containing query title value
       photoData = allPhotos.filter((photo) => photo.title.includes(title));
     }
 
     if (albumTitle) {
+      // get all albums
       const allAlbumsResponse = await axios.get(`${albumsApi}`);
       const allAlbums = allAlbumsResponse.data;
-
+      // separate out only those albums with title containing query title value
       const albumMatches = allAlbums.filter((album) => album.title.includes(albumTitle));
 
-      // console.log(albumMatches);
+      // set albumMatches ids to keys of new object
+      let albumIdObj = {};
+      for (let i=0; i < albumMatches.length; i++) {
+        // arbitrarily set value to boolean
+        albumIdObj[albumMatches[i].id] = true;
+      }
 
-      // builds a new array of photos with albumId equal to albumMatches.id -- O(n^2) time complexity :(  Not ideal
-      for (let i=0; i < allPhotos.length; i++) {
-        for (let j = 0; j < albumMatches.length; j++) {
-          if (allPhotos[i].albumId === albumMatches[j].id) {
-            photoData.push(allPhotos[i]);
-          }
+      // compare each photo in AllPhotos albumId value to the id keys in albumIdObj -- O(n) time complexity
+      for (let i = 0; i < allPhotos.length; i++) {
+        if (allPhotos[i].albumId in albumIdObj) {
+          photoData.push(allPhotos[i]);
         }
       }
     }
-    
-    const photoDataEnriched = [];
 
-    // for each photo that meets the filter specifications, embed album and user info
-    for (let i = 0; i < photoData.length; i++) {
-      const albumResponse = await axios.get(`${albumsApi}/${photoData[i].albumId}`);
-      const albumData = albumResponse.data;
-      // console.log("got album from jsonplaceholder");
-  
-      const userResponse = await axios.get(`${userApi}/${albumData.userId}`);
-      const userData = userResponse.data;
-      // console.log("got user from jsonplaceholder");
+    // call enrichPhotoData function to add album and user info to selected photos
+    const photoDataEnriched = await enrichPhotoData(photoData);
 
-      // removed userId key from albumData
-      const { userId, ...album } = albumData
-      // save album and userData values within photo object
-      photoData[i].album = album;
-      photoData[i].album.user = userData;
-
-      // remove albumId key from photo object
-      const { albumId, ...photo } = photoData[i];
-
-      photoDataEnriched.push(photo);
-    }
     console.log("Return Length: " + photoDataEnriched.length);
 
     res.json(photoDataEnriched);
