@@ -12,8 +12,8 @@ const photosApi = "https://jsonplaceholder.typicode.com/photos";
 
 router.get('/', async (req, res) => {
   const query = req.query;
-  const limit = query.limit || 25;
-  const offset = query.offset || 0;
+  const limit = Number(query.limit) || 25;
+  const offset = Number(query.offset) || 0;
   const title = query.title;
   const albumTitle = query['album.title'];
   const userEmail = query['album.user.email'];
@@ -29,24 +29,49 @@ router.get('/', async (req, res) => {
       const allPhotos = allPhotosResponse.data;
 
       // separate out only those photos with title containing query title value
-      photoData = allPhotos.filter((photo) => photo.title.includes(title));
+      const filteredPhotos = allPhotos.filter((photo) => photo.title.includes(title));
+
+      // pagination
+      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+        photoData.push(filteredPhotos[i]);
+      }
     } else if (!title && albumTitle && !userEmail) {
-      photoData = await getPhotosByAlbumTitle(albumTitle);
+      const filteredPhotos = await getPhotosByAlbumTitle(albumTitle);
+
+      // pagination
+      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+        photoData.push(filteredPhotos[i]);
+      }
     } else if (!title && !albumTitle && userEmail) {
-      photoData = await getPhotosByUserEmail(userEmail);
+      const filteredPhotos = await getPhotosByUserEmail(userEmail);
+
+      // pagination
+      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+        photoData.push(filteredPhotos[i]);
+      }
     } else if (title && albumTitle && !userEmail) {
       // find albums by albumTitle, then find photos within that set w/ title
       const albumPhotos = await getPhotosByAlbumTitle(albumTitle);
-      photoData = albumPhotos.filter((photo) => photo.title.includes(title));
+      const filteredPhotos = albumPhotos.filter((photo) => photo.title.includes(title));
+
+      // pagination
+      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+        photoData.push(filteredPhotos[i]);
+      }
     } else if (title && !albumTitle && userEmail) {
       // find photos by user email, then find photos within that set w/ title
       const userPhotos = await getPhotosByUserEmail(userEmail);
-      photoData = userPhotos.filter((photo) => photo.title.includes(title));
+      const filteredPhotos = userPhotos.filter((photo) => photo.title.includes(title));
+
+      // pagination
+      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+        photoData.push(filteredPhotos[i]);
+      }
     } else if (!title && albumTitle && userEmail) {
       // find photos by userEmail, get albumIds by albumtitle, then filter photos by albumIds
       const userPhotos = await getPhotosByUserEmail(userEmail);
       const albumIds = await getAlbumIdsByTitle(albumTitle);
-      photoData = userPhotos.filter((photo) => {
+      const filteredPhotos = userPhotos.filter((photo) => {
         for (let i = 0; i < albumIds.length; i++) {
           if (photo.albumId === albumIds[i]) {
             return true;
@@ -55,12 +80,17 @@ router.get('/', async (req, res) => {
           }
         }
       });
+
+      // pagination
+      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+        photoData.push(filteredPhotos[i]);
+      }
     } else if (title && albumTitle && userEmail) {
       // find photos by userEmail, then get albumIds by albumTitle, then filter photos by albumIds and title
       const userPhotos = await getPhotosByUserEmail(userEmail);
       const albumIds = await getAlbumIdsByTitle(albumTitle);
-      console.log(albumIds);
-      photoData = userPhotos.filter((photo) => {
+      // console.log(albumIds);
+      const filteredPhotos = userPhotos.filter((photo) => {
         for (let i = 0; i < albumIds.length; i++) {
           if (photo.albumId === albumIds[i] && photo.title.includes(title)) {
             return true;
@@ -69,13 +99,18 @@ router.get('/', async (req, res) => {
           }
         }
       });
+
+      // pagination
+      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+        photoData.push(filteredPhotos[i]);
+      }
     } else {
-      // return all photos with limit and offset
+      // return all photos with pagination built in to the call since no filtering required
       const allPhotosResponse = await axios.get(`${photosApi}?_start=${offset}&_limit=${limit}`);
       photoData = allPhotosResponse.data;
     }
 
-    // call enrichPhotoData function to add album and user info to selected photos
+    // call enrichPhotoData function to add album and user info to selected photos (photoData)
     const photoDataEnriched = await enrichPhotoData(photoData);
 
     console.log("Return Length: " + photoDataEnriched.length);
@@ -96,7 +131,7 @@ router.get('/:ID', async (req, res) => {
 
     const albumResponse = await axios.get(`${albumsApi}/${photoData.albumId}`);
     const albumData = albumResponse.data;
-  
+
     const userResponse = await axios.get(`${userApi}/${albumData.userId}`);
     const userData = userResponse.data;
 
