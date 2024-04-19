@@ -1,14 +1,11 @@
 const axios = require('axios');
+const { getAlbumIdsByTitle } = require('./getAlbumIdsByTitle');
 const albumsApi = "https://jsonplaceholder.typicode.com/albums";
 const photosApi = "https://jsonplaceholder.typicode.com/photos";
 
 async function getPhotosByAlbumTitle(albumTitle) {
-  // get all albums
-  const allAlbumsResponse = await axios.get(`${albumsApi}`);
-  const allAlbums = allAlbumsResponse.data;
-  // separate out only those albums with title containing query title value
-  const albumMatches = allAlbums.filter((album) => album.title.includes(albumTitle));
-  const albumIdArr = albumMatches.map((e) => e.id);
+  // get all album Ids
+  const albumIdArr = await getAlbumIdsByTitle(albumTitle);
 
   let queryString = '';
   // create query string based on album Ids
