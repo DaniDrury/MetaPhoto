@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <Header />
-      <main>
+      <main className='grow'>
         <Page />
       </main>
       <Footer />      
