@@ -1,5 +1,5 @@
-import Filter from "../Filter/filter";
 import { useState } from "react";
+import Filter from "../Filter/filter";
 import Photos from "../Photos/photos";
 
 const Page = () => {
@@ -13,8 +13,7 @@ const Page = () => {
   });
 
   return (
-    <section className="m-4">
-      <h2 className="text-xl text-black my-3">Use the below filters to select which photos to view.</h2>
+    <section className="my-4 flex flex-col items-stretch w-[90%]">
       <Filter state={photoFilters} setPhotoFilters={setPhotoFilters} />
       <Photos state={photoFilters} />
     </section>

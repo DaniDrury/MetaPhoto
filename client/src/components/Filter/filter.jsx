@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 const Filter = (props) => {
-  const [formData, setFormData] = useState({ photoTitle:"", albumTitle:"", email:"" });
+  const [formData, setFormData] = useState({ photoTitle: "", albumTitle: "", email: "" });
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -15,23 +15,33 @@ const Filter = (props) => {
       ...props.state,
       photoTitle: formData.photoTitle,
       albumTitle: formData.albumTitle,
-      email: formData.email });
-    setFormData({ photoTitle:"", albumTitle:"", email:"" });
+      email: formData.email
+    });
+    setFormData({ photoTitle: "", albumTitle: "", email: "" });
   };
 
   return (
     <div>
+      <h2 className="text-xl my-3 text-black font-semibold text-xl">Use the below filters to select which photos to view.</h2>
       <form type="submit" onSubmit={handleSubmit}>
-        <label htmlFor="photoTitle">Photo Title Contains: </label>
-        <input type="text" id="photoTitle" name="photoTitle" className="border rounded me-4" 
-          value={formData.photoTitle} onChange={handleChange} />
-        <label htmlFor="albumTitle">Album Title Contains: </label>
-        <input type="text" id="albumTitle" name="albumTitle" className="border rounded me-4"
-          value={formData.albumTitle} onChange={handleChange} />
-        <label htmlFor="email">Search by Email: </label>
-        <input type="email" id="email" name="email" autoComplete="off" className="border rounded me-4"
-          value={formData.email} onChange={handleChange} />
-        <button type="submit" className="bg-blue-400 font-semibold rounded-md px-2 ms-5 text-lg">
+        <div className="flex flex-row flex-wrap">
+          <div className="mb-2">
+            <label htmlFor="photoTitle">Photo Title Contains: </label>
+            <input type="text" id="photoTitle" name="photoTitle" className="border rounded me-4 w-56"
+              value={formData.photoTitle} onChange={handleChange} />
+          </div>
+          <div className="mb-2">
+            <label htmlFor="albumTitle">Album Title Contains: </label>
+            <input type="text" id="albumTitle" name="albumTitle" className="border rounded me-4 w-56"
+              value={formData.albumTitle} onChange={handleChange} />
+          </div>
+          <div className="mb-2">
+            <label htmlFor="email">Search by User Email: </label>
+            <input type="email" id="email" name="email" autoComplete="off" className="border rounded me-4  w-56"
+              value={formData.email} onChange={handleChange} />
+          </div>
+        </div>
+        <button type="submit" className="bg-blue-400 font-semibold rounded-md mt-2 px-2 text-lg w-24">
           Search
         </button>
       </form>

@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <Header />
-      <main className='grow'>
+      <main className='grow flex justify-center'>
         <Page />
       </main>
       <Footer />      

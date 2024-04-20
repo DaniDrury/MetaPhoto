@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from 'react';
 import apiQuery from '../../utils/queries';
+import PhotoCard from '../PhotoCard/photoCard';
 
 function Photos(filters) {
   // console.log(state)
@@ -31,11 +32,11 @@ function Photos(filters) {
   console.log("I'm data.current: ", data.current);
 
   return (
-    <div className='mt-8'>
-      <h4>This is where the photos will show up</h4>
-      <p className='text-xl'>Title: {photos[0]?.title}</p>
-      <p className='text-xl'>AlbumTitle: {photos[0]?.album.title}</p>
-      <p className='text-xl'>User: {photos[0]?.album.user.name}</p>
+    <div className='mt-8 flex flex-col'>
+      <h2 className='text-2xl font-semibold mb-2'>Photos:</h2>
+      <div className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2'>
+        {photos.map((photo) => <PhotoCard key={photo.id} data={photo} />)}
+      </div>
     </div>
   );
 }
