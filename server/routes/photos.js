@@ -52,6 +52,7 @@ router.get('/', async (req, res) => {
     } else if (title && albumTitle && !userEmail) {
       // find albums by albumTitle, then find photos within that set w/ title
       const albumPhotos = await getPhotosByAlbumTitle(albumTitle);
+
       const filteredPhotos = albumPhotos.filter((photo) => photo.title.includes(title));
 
       // pagination
@@ -89,7 +90,7 @@ router.get('/', async (req, res) => {
       // find photos by userEmail, then get albumIds by albumTitle, then filter photos by albumIds and title
       const userPhotos = await getPhotosByUserEmail(userEmail);
       const albumIds = await getAlbumIdsByTitle(albumTitle);
-      // console.log(albumIds);
+      
       const filteredPhotos = userPhotos.filter((photo) => {
         for (let i = 0; i < albumIds.length; i++) {
           if (photo.albumId === albumIds[i] && photo.title.includes(title)) {

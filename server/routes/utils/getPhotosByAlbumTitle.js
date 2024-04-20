@@ -1,6 +1,5 @@
 const axios = require('axios');
 const { getAlbumIdsByTitle } = require('./getAlbumIdsByTitle');
-const albumsApi = "https://jsonplaceholder.typicode.com/albums";
 const photosApi = "https://jsonplaceholder.typicode.com/photos";
 
 async function getPhotosByAlbumTitle(albumTitle) {
