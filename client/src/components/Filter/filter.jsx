@@ -10,7 +10,6 @@ const Filter = (props) => {
   };
 
   const handleSubmit = (event) => {
-    console.log("props.photoFilters: " + props.state);
     event.preventDefault();
     props.setPhotoFilters({
       ...props.state,
