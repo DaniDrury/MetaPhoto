@@ -3,8 +3,6 @@ import { useState } from 'react';
 function Pagination(props) {
   const { photoState, filterState, setFilterState } = props;
 
-  // console.log(props);
-
   const [formData, setFormData] = useState({ limit: filterState.limit, offset: 0 });
 
   const handleChange = (event) => {
@@ -32,10 +30,7 @@ function Pagination(props) {
 
   const handleNext = (event) => {
     event.preventDefault();
-    console.log("I'm in Handle Next");
     const newOffset = Number(filterState.offset) + Number(filterState.limit);
-    // console.log (filterState.offset)
-    console.log(newOffset);
     setFilterState({
       ...filterState,
       offset: newOffset
@@ -48,7 +43,6 @@ function Pagination(props) {
     prev = true;
   }
   let next = true;
-  // console.log(photoState.length);
   if (photoState.length < filterState.limit) {
     next = false;
   }

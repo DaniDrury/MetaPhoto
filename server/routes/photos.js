@@ -115,8 +115,6 @@ router.get('/', async (req, res) => {
     if (photoData.length > 0) {
       const photoDataEnriched = await enrichPhotoData(photoData);
 
-      console.log("Return Length: " + photoDataEnriched.length);
-
       res.json(photoDataEnriched);
     } else {
       res.status(404).json("Not Found");

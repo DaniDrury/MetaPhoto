@@ -19,7 +19,6 @@ function Photos(props) {
       try {
         setLoading(true);
         const photos = await apiQuery(props.state);
-        // console.log("I'm photos returned:  ", photos);
         setLoading(false);
         return photos;
       } catch (err) {
@@ -28,7 +27,6 @@ function Photos(props) {
     }
 
     getPhotos().then((response) => {
-      console.log(response);
       if (response !== "Not Found") {
         data.current = response;
         setPhotos(data.current);
