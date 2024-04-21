@@ -90,7 +90,7 @@ router.get('/', async (req, res) => {
       // find photos by userEmail, then get albumIds by albumTitle, then filter photos by albumIds and title
       const userPhotos = await getPhotosByUserEmail(userEmail);
       const albumIds = await getAlbumIdsByTitle(albumTitle);
-      
+
       const filteredPhotos = userPhotos.filter((photo) => {
         for (let i = 0; i < albumIds.length; i++) {
           if (photo.albumId === albumIds[i] && photo.title.includes(title)) {
@@ -112,11 +112,15 @@ router.get('/', async (req, res) => {
     }
 
     // call enrichPhotoData function to add album and user info to selected photos (photoData)
-    const photoDataEnriched = await enrichPhotoData(photoData);
+    if (photoData.length > 0) {
+      const photoDataEnriched = await enrichPhotoData(photoData);
 
-    console.log("Return Length: " + photoDataEnriched.length);
+      console.log("Return Length: " + photoDataEnriched.length);
 
-    res.json(photoDataEnriched);
+      res.json(photoDataEnriched);
+    } else {
+      res.status(404).json("Not Found");
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json("Internal Server Error");

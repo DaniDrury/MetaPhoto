@@ -17,12 +17,11 @@ const Filter = (props) => {
       albumTitle: formData.albumTitle,
       email: formData.email
     });
-    setFormData({ photoTitle: "", albumTitle: "", email: "" });
   };
 
   return (
     <div>
-      <h2 className="text-xl my-3 text-black font-semibold text-xl">Use the below filters to select which photos to view.</h2>
+      <h2 className="text-xl my-3 text-black font-semibold">Use the below filters to select which photos to view.</h2>
       <form type="submit" onSubmit={handleSubmit}>
         <div className="flex flex-row flex-wrap">
           <div className="mb-2">
