@@ -7,13 +7,17 @@ async function getPhotosByAlbumTitle(albumTitle) {
   const albumIdArr = await getAlbumIdsByTitle(albumTitle);
 
   let queryString = '';
-  // create query string based on album Ids
-  for (let i = 0; i < albumIdArr.length; i++) {
-    queryString += `albumId=${albumIdArr[i]}&`;
-  }
+  // create query string based on album Ids if we find corresponding albums
+  if (albumIdArr.length > 0) {
+    for (let i = 0; i < albumIdArr.length; i++) {
+      queryString += `albumId=${albumIdArr[i]}&`;
+    }
 
-  const photosResponse = await axios.get(`${photosApi}?${queryString}`);
-  return photosResponse.data;
+    const photosResponse = await axios.get(`${photosApi}?${queryString}`);
+    return photosResponse.data;
+  } else {
+    return [];
+  }
 }
 
 module.exports = { getPhotosByAlbumTitle };

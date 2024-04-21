@@ -6,8 +6,12 @@ async function getAlbumIdsByTitle(albumTitle) {
   const allAlbumsResponse = await axios.get(`${albumsApi}`);
   const allAlbums = allAlbumsResponse.data;
   // separate out only those albums with title containing query title value
-  const albumMatches = allAlbums.filter((album) => album.title.includes(albumTitle));
-  return albumMatches.map((e) => e.id);
+  if (allAlbums.length > 0) {
+    const albumMatches = allAlbums.filter((album) => album.title.includes(albumTitle));
+    return albumMatches.map((e) => e.id);
+  } else {
+    return [];
+  }
 }
 
 module.exports = { getAlbumIdsByTitle };
