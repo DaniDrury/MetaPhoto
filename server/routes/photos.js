@@ -32,21 +32,21 @@ router.get('/', async (req, res) => {
       const filteredPhotos = allPhotos.filter((photo) => photo.title.includes(title));
 
       // pagination
-      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+      for (let i = offset; i < (offset + limit) && i < (offset + (filteredPhotos.length - offset)); i++) {
         photoData.push(filteredPhotos[i]);
       }
     } else if (!title && albumTitle && !userEmail) {
       const filteredPhotos = await getPhotosByAlbumTitle(albumTitle);
 
       // pagination
-      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+      for (let i = offset; i < (offset + limit) && i < (offset + (filteredPhotos.length - offset)); i++) {
         photoData.push(filteredPhotos[i]);
       }
     } else if (!title && !albumTitle && userEmail) {
       const filteredPhotos = await getPhotosByUserEmail(userEmail);
 
       // pagination
-      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+      for (let i = offset; i < (offset + limit) && i < (offset + (filteredPhotos.length - offset)); i++) {
         photoData.push(filteredPhotos[i]);
       }
     } else if (title && albumTitle && !userEmail) {
@@ -56,7 +56,7 @@ router.get('/', async (req, res) => {
       const filteredPhotos = albumPhotos.filter((photo) => photo.title.includes(title));
 
       // pagination
-      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+      for (let i = offset; i < (offset + limit) && i < (offset + (filteredPhotos.length - offset)); i++) {
         photoData.push(filteredPhotos[i]);
       }
     } else if (title && !albumTitle && userEmail) {
@@ -65,7 +65,7 @@ router.get('/', async (req, res) => {
       const filteredPhotos = userPhotos.filter((photo) => photo.title.includes(title));
 
       // pagination
-      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+      for (let i = offset; i < (offset + limit) && i < (offset + (filteredPhotos.length - offset)); i++) {
         photoData.push(filteredPhotos[i]);
       }
     } else if (!title && albumTitle && userEmail) {
@@ -83,7 +83,7 @@ router.get('/', async (req, res) => {
       });
 
       // pagination
-      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+      for (let i = offset; i < (offset + limit) && i < (offset + (filteredPhotos.length - offset)); i++) {
         photoData.push(filteredPhotos[i]);
       }
     } else if (title && albumTitle && userEmail) {
@@ -102,7 +102,7 @@ router.get('/', async (req, res) => {
       });
 
       // pagination
-      for (let i = offset; i < (offset + limit) && i < (offset + filteredPhotos.length); i++) {
+      for (let i = offset; i < (offset + limit) && i < (offset + (filteredPhotos.length - offset)); i++) {
         photoData.push(filteredPhotos[i]);
       }
     } else {
@@ -121,35 +121,6 @@ router.get('/', async (req, res) => {
     } else {
       res.status(404).json("Not Found");
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json("Internal Server Error");
-  }
-});
-
-router.get('/:ID', async (req, res) => {
-  const id = req.params.ID;
-
-  try {
-    const photoResponse = await axios.get(`${photosApi}/${id}`);
-    const photoData = photoResponse.data;
-
-    const albumResponse = await axios.get(`${albumsApi}/${photoData.albumId}`);
-    const albumData = albumResponse.data;
-
-    const userResponse = await axios.get(`${userApi}/${albumData.userId}`);
-    const userData = userResponse.data;
-
-    // removed userId key from albumData
-    const { userId, ...album } = albumData
-    // save album and userData values within photo object
-    photoData.album = album;
-    photoData.album.user = userData;
-
-    // remove albumId key from photo object
-    const { albumId, ...photo } = photoData;
-
-    res.json(photo);
   } catch (err) {
     console.error(err);
     res.status(500).json("Internal Server Error");

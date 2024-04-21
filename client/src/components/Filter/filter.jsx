@@ -15,7 +15,7 @@ const Filter = (props) => {
       ...props.state,
       photoTitle: formData.photoTitle,
       albumTitle: formData.albumTitle,
-      email: formData.email
+      email: formData.email,
     });
   };
 

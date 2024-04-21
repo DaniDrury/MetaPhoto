@@ -8,7 +8,6 @@ async function getPhotosByUserEmail(userEmail) {
   const user = userResponse.data;
 
   if (user.length > 0) {
-
     const userAlbumsResponse = await axios.get(`${userApi}/${user[0].id}/albums`);
     const userAlbums = userAlbumsResponse.data;
     const albumIdArr = userAlbums.map((e) => e.id);

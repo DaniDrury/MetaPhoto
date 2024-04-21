@@ -15,7 +15,7 @@ const Page = () => {
   return (
     <section className="my-4 flex flex-col items-stretch w-[90%]">
       <Filter state={photoFilters} setPhotoFilters={setPhotoFilters} />
-      <Photos state={photoFilters} />
+      <Photos state={photoFilters} setPhotoFilters={setPhotoFilters} />
     </section>
   );
 }
