@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import apiQuery from '../../utils/queries';
 import PhotoCard from '../PhotoCard/photoCard';
 import Pagination from '../Pagination/pagination';
+import RotateLoader from 'react-spinners/RotateLoader';
 
 function Photos(props) {
   // initializing ref variables to be used in useEffect
@@ -11,12 +12,15 @@ function Photos(props) {
 
   const [photos, setPhotos] = useState([]);
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     async function getPhotos() {
-      // console.log("State", filters.state);
       try {
+        setLoading(true);
         const photos = await apiQuery(props.state);
         // console.log("I'm photos returned:  ", photos);
+        setLoading(false);
         return photos;
       } catch (err) {
         console.error("Error: ", err);
@@ -34,6 +38,8 @@ function Photos(props) {
         isOk.current = false;
       }
     });
+
+  
   }, [props.state]);
 
   // check that data was returned and set conditional rendering
@@ -46,13 +52,26 @@ function Photos(props) {
 
   return (
     <div className='mt-8 flex flex-col'>
-      <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl font-semibold mb-2'>Photos:</h2>
-        <Pagination photoState={photos} filterState={props.state} setFilterState={props.setPhotoFilters} />
-      </div>
-      <div className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2'>
-        {photoContent}
-      </div>
+      {loading ?
+        <RotateLoader
+          color="teal"
+          loading={loading}
+          size={25}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+          className='self-center lg:mt-48'
+        />
+        :
+        <>
+          <div className='flex flex-row justify-between'>
+            <h2 className='text-2xl font-semibold mb-2'>Photos:</h2>
+            <Pagination photoState={photos} filterState={props.state} setFilterState={props.setPhotoFilters} />
+          </div>
+          <div className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2'>
+            {photoContent}
+          </div>
+        </>
+      }
     </div>
   );
 }

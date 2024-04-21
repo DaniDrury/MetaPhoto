@@ -5,7 +5,7 @@ function Pagination(props) {
 
   // console.log(props);
 
-  const [formData, setFormData] = useState({ limit: 25, offset: 0 });
+  const [formData, setFormData] = useState({ limit: filterState.limit, offset: 0 });
 
   const handleChange = (event) => {
     const { name, value } = event.target;
