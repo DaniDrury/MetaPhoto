@@ -16,6 +16,7 @@ const Filter = (props) => {
       photoTitle: formData.photoTitle,
       albumTitle: formData.albumTitle,
       email: formData.email,
+      offset: 0
     });
   };
 
