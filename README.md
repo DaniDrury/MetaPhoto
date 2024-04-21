@@ -13,8 +13,6 @@ In the website, you may search for photos containing certains words or parts of 
 Back-End: Express.js, Axios  
 Font-End: JavaScript, React, Vite, TailwindCSS
 
-making changes to test branch protection
-
 ## Questions
 To contact me with any questions regarding this project:
 1. [GitHub Profile](https://github.com/DaniDrury)
