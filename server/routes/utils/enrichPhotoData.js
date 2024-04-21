@@ -6,20 +6,27 @@ const albumsApi = "https://jsonplaceholder.typicode.com/albums";
 async function enrichPhotoData(photos) {
   const photoDataEnriched = [];
 
-  // for each photo, embed album and user info
+  // for each photo, identify unique albumIds, for each unique AlbumId, get album and user details
+  const uniqueAlbumIds = {};
   for (let i = 0; i < photos.length; i++) {
-    const albumResponse = await axios.get(`${albumsApi}/${photos[i].albumId}`);
-    const albumData = albumResponse.data;
+    if (!((photos[i].albumId) in uniqueAlbumIds)) {
+      const albumResponse = await axios.get(`${albumsApi}/${photos[i].albumId}`);
+      const albumData = albumResponse.data;
 
-    const userResponse = await axios.get(`${userApi}/${albumData.userId}`);
-    const userData = userResponse.data;
+      const userResponse = await axios.get(`${userApi}/${albumData.userId}`);
+      const userData = userResponse.data;
 
-    // remove userId key from albumData
-    const { userId, ...album } = albumData
+      // remove userId key from albumData
+      const { userId, ...album } = albumData;
 
-    // save album and userData values within photo object
-    photos[i].album = album;
-    photos[i].album.user = userData;
+      uniqueAlbumIds[photos[i].albumId] = [album, userData];
+    }
+  }
+
+  // assign album and user data to each photo
+  for (let i = 0; i < photos.length; i++) {
+    photos[i].album = uniqueAlbumIds[`${photos[i].albumId}`][0];
+    photos[i].album.user = uniqueAlbumIds[photos[i].albumId][1];
 
     // remove albumId key from photo object
     const { albumId, ...photo } = photos[i];
